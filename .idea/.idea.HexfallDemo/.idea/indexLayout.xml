@@ -15,6 +15,7 @@
       <Path>../../../anildogan/Library/Unity/cache/packages/packages.unity.com/com.unity.textmeshpro@2.0.0</Path>
     </explicitIncludes>
     <explicitExcludes>
+      <Path>.git</Path>
       <Path>.idea</Path>
       <Path>Library</Path>
       <Path>Logs</Path>

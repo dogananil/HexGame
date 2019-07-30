@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
@@ -28,8 +29,12 @@ public class GameManager : MonoBehaviour {
 	private bool popOneMoveBefore;
 	private List<HexCell> deletedHex;
 	private List<BackgroundTile> deletedTile;
-	private int indexDeleted;
-
+	public GameObject ScoreTextObject;
+	
+	[HideInInspector] 
+	public int indexDeleted; 
+	public bool downIsFinished;
+	private int score;
 
 
 
@@ -62,13 +67,10 @@ public class GameManager : MonoBehaviour {
 		
 
 	}
-
-	private IEnumerator Example()
-	{
-		yield return new WaitForSeconds(0.5f);
-	}
+	
 	public void SelectHexagons(string[]split,int dot_index)
 	{
+		
 		deletedHex.Clear();
 		deletedTile.Clear();
 		indexDeleted = 0;
@@ -82,6 +84,7 @@ public class GameManager : MonoBehaviour {
 		}
 		else
 		{
+			
 			right = true && !right;
 			
 				
@@ -89,7 +92,9 @@ public class GameManager : MonoBehaviour {
 			//wait until setPatents
 			if (!popOneMoveBefore)
 			{
+				//Debug.Log("reset");
 				StartCoroutine(WaitUntilPrevHexReset(right));
+				
 			}
 			
 			
@@ -187,6 +192,92 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
+	private IEnumerator rotateHexs(bool right,int dotIndex)
+	{
+		
+		float startRotation = grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.z;
+		float endRotation=0;
+		if (right)
+		{
+			endRotation = startRotation - 120.0f;
+		}
+		else
+		{
+			endRotation = startRotation + 120.0f;
+		}
+		float t = 0.0f;
+		float zRotation = 0.0f;
+		while (t<1)
+			{
+				t += Time.deltaTime;
+				zRotation = Mathf.Lerp(startRotation, endRotation, t ) % 360.0f;
+				 if (right == true)
+				 {
+					 
+					 grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles = new Vector3(grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.x,grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.y, zRotation);
+				 }
+				 else
+				 {
+					
+					 grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles = new Vector3(grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.x,grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.y,zRotation);
+				 }
+				//grid.dotHolder.transform.GetChild(dotIndex).transform.Rotate(Vector3.back,1,Space.World);
+				yield return null;
+
+			}
+
+		if (right)
+		{
+			popOneMoveBefore = false;
+			Renderer rend1 = allHexagons[_hex1X, _hex1Y].GetComponent<Renderer>();
+			while (popSameColor(rend1, _hex1X, _hex1Y))
+			{
+				popOneMoveBefore = true;
+			}
+			Renderer rend2 = allHexagons[_hex2X, _hex2Y].GetComponent<Renderer>();
+			while (popSameColor(rend2, _hex2X, _hex2Y))
+			{
+				popOneMoveBefore = true;
+			}
+
+
+			Renderer rend3 = allHexagons[_hex3X, _hex3Y].GetComponent<Renderer>();
+			while (popSameColor(rend3, _hex3X, _hex3Y))
+			{
+				popOneMoveBefore = true;
+			}
+		}
+		else
+		{
+			popOneMoveBefore = false;
+			Renderer rend1 = allHexagons[_hex1X, _hex1Y].GetComponent<Renderer>();
+			
+			while (popSameColor(rend1, _hex1X, _hex1Y))
+			{
+				popOneMoveBefore = true;
+			}
+			
+			Renderer rend2 = allHexagons[_hex2X, _hex2Y].GetComponent<Renderer>();
+			while (popSameColor(rend2, _hex2X, _hex2Y))
+			{
+				popOneMoveBefore = true;
+			}
+			
+			Renderer rend3 = allHexagons[_hex3X, _hex3Y].GetComponent<Renderer>();
+			while (popSameColor(rend3, _hex3X, _hex3Y))
+			{
+				popOneMoveBefore = true;
+			}
+		}
+		
+		if (popOneMoveBefore)
+		{
+			replaceAllHex();
+		}
+		
+		
+		
+	}
 	private bool popSameColor(Renderer rend,int x,int y)
 	{
 		
@@ -516,88 +607,7 @@ public class GameManager : MonoBehaviour {
 
 		return false;
 	}
-	private IEnumerator rotateHexs(bool right,int dotIndex)
-	{
-		
-		float startRotation = grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.z;
-		float endRotation=0;
-		if (right)
-		{
-			endRotation = startRotation - 120.0f;
-		}
-		else
-		{
-			endRotation = startRotation + 120.0f;
-		}
-		float t = 0.0f;
-		float zRotation = 0.0f;
-		while (t<1)
-			{
-				t += Time.deltaTime;
-				zRotation = Mathf.Lerp(startRotation, endRotation, t ) % 360.0f;
-				 if (right == true)
-				 {
-					 
-					 grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles = new Vector3(grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.x,grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.y, zRotation);
-				 }
-				 else
-				 {
-					
-					 grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles = new Vector3(grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.x,grid.dotHolder.transform.GetChild(dotIndex).transform.eulerAngles.y,zRotation);
-				 }
-				//grid.dotHolder.transform.GetChild(dotIndex).transform.Rotate(Vector3.back,1,Space.World);
-				yield return null;
 
-			}
-
-		if (right)
-		{
-			popOneMoveBefore = false;
-			Renderer rend1 = allHexagons[_hex1X, _hex1Y].GetComponent<Renderer>();
-			while (popSameColor(rend1, _hex1X, _hex1Y))
-			{
-				popOneMoveBefore = true;
-			}
-			Renderer rend2 = allHexagons[_hex2X, _hex2Y].GetComponent<Renderer>();
-			while (popSameColor(rend2, _hex2X, _hex2Y))
-			{
-				popOneMoveBefore = true;
-			}
-
-
-			Renderer rend3 = allHexagons[_hex3X, _hex3Y].GetComponent<Renderer>();
-			while (popSameColor(rend3, _hex3X, _hex3Y))
-			{
-				popOneMoveBefore = true;
-			}
-			
-		}
-		else
-		{
-			popOneMoveBefore = false;
-			Renderer rend1 = allHexagons[_hex1X, _hex1Y].GetComponent<Renderer>();
-			
-			while (popSameColor(rend1, _hex1X, _hex1Y))
-			{
-				popOneMoveBefore = true;
-			}
-			
-			Renderer rend2 = allHexagons[_hex2X, _hex2Y].GetComponent<Renderer>();
-			while (popSameColor(rend2, _hex2X, _hex2Y))
-			{
-				popOneMoveBefore = true;
-			}
-			
-			Renderer rend3 = allHexagons[_hex3X, _hex3Y].GetComponent<Renderer>();
-			while (popSameColor(rend3, _hex3X, _hex3Y))
-			{
-				popOneMoveBefore = true;
-			}
-		}
-		replaceAllHex();
-		
-		
-	}
 	private void replaceAllHex( )//replace columns after pop same colors
 	{
 		int positionDown;
@@ -629,7 +639,7 @@ public class GameManager : MonoBehaviour {
 						//Debug.Log(i+","+j);
 						allHexagons[i, j - positionDown] = allHexagons[i, j];
 						allHexagons[i, j - positionDown].deleted = false;
-						allHexagons[i, j].deleted = true;
+						allHexagons[i, j].deleted = false;
 						grid.allTiles[i, j - positionDown] = grid.allTiles[i, j];
 						//Debug.Log("i ve j " + grid.allTiles[i, j].coordinateY);
 						//Debug.Log(" i ve j-positionDown" + grid.allTiles[i, j - positionDown]);
@@ -674,15 +684,49 @@ public class GameManager : MonoBehaviour {
 		{
 			t += Time.deltaTime;
 			grid.allTiles[i, j - positionDown].transform.localPosition =Vector3.Lerp(startPosition, targetPosition, t);
+			
+			yield return null;
+		} 
+		
 
+	}
+	private IEnumerator positionDownAnimForRefill(int i, int j, int positionDown,bool refillOrNot,float startPositiony)
+	{
+		float t = 0.0f;
+		Vector3 startPosition;
+		if (refillOrNot)
+		{
+			startPosition = new Vector3( i*Hexagon.outerRadius *1.5f,10*Hexagon.innerRadius*2f + Mathf.Cos(Mathf.PI*(Mathf.Pow(i,2)+1)/2)*Hexagon.innerRadius,0);
+
+		}
+		else
+		{
+			startPosition = new Vector3( i*Hexagon.outerRadius *1.5f,startPositiony,0);
+
+		}
+		Vector3 targetPosition = new Vector3(i*Hexagon.outerRadius *1.5f,(j-positionDown)*Hexagon.innerRadius*2f + Mathf.Cos(Mathf.PI*(Mathf.Pow(i,2)+1)/2)*Hexagon.innerRadius);
+		while(t<1)
+		{
+			t += Time.deltaTime;
+			grid.allTiles[i, j - positionDown].transform.localPosition =Vector3.Lerp(startPosition, targetPosition, t);
+			//Debug.Log();
 			yield return null;
 		}
+
+		indexDeleted = 0;
+		Text ScoreText;
+		score += deletedHex.Count*5;
+		ScoreText= ScoreTextObject.GetComponent<Text>();
+		ScoreText.text = "Score  = " + score;
+		deletedHex.Clear();
+		deletedTile.Clear();
+		popSameHexFromAllBoard();
 
 	}
 	private void refillAllBoard(int i)
 	{
 		Renderer rend;
-		
+		rotateCounter = 0;
 		for (int j = 0; j < cols; j++)
 		{
 			
@@ -702,7 +746,7 @@ public class GameManager : MonoBehaviour {
 				
 				
 				int random =   Mathf.RoundToInt (Random.Range (0.0f, 4.0f));
-				Debug.Log("random  " + random);
+				//Debug.Log("random  " + random);
 				rend.material.color = grid.allTiles[i,j].colors[random];
 			//	if (i > 0 )
 			//	{
@@ -710,14 +754,14 @@ public class GameManager : MonoBehaviour {
 					{
 						random =   Mathf.RoundToInt (Random.Range (0.0f, 4.0f));
 						rend.material.color = grid.allTiles[i,j].colors[random];
-						Debug.Log(" Random 2   " + random + " j = " + j);
+						//Debug.Log(" Random 2   " + random + " j = " + j);
 						
 					}
 				//}
 
 				
 				indexDeleted++;
-				StartCoroutine(positionDownAnim(i, j, 0, true, 0));
+				StartCoroutine(positionDownAnimForRefill(i, j, 0, true, 0));
 				
 			}
 
@@ -745,8 +789,8 @@ public class GameManager : MonoBehaviour {
 			grid.allTiles[_hex3X, _hex3Y] = tempTile;
 			grid.allTiles[_hex3X, _hex3Y].coordinateX = _hex3X;
 			grid.allTiles[_hex3X, _hex3Y].coordinateY =_hex3Y;
+			Debug.Log("Clockwise 1 time");
 
-			
 		}
 		else if (rotateCounter % 3 == 2 && right==false || rotateCounter%3==1 && right==true)//if rotate clockwise twice or counterclockwise once
 		{
@@ -762,7 +806,7 @@ public class GameManager : MonoBehaviour {
 			grid.allTiles[_hex2X, _hex2Y]=tempTile;
 			grid.allTiles[_hex2X, _hex2Y].coordinateX=_hex2X;
 			grid.allTiles[_hex2X, _hex2Y].coordinateY=_hex2Y;
-
+			Debug.Log("Clockwise 2 time");
 		}
 			
 			
@@ -797,7 +841,6 @@ public class GameManager : MonoBehaviour {
 				{
 					if (allHexagons[i - 1, j].deleted&& allHexagons[i - 1, j + 1].deleted && allHexagons[i,j].deleted)
 					{
-						
 					}
 					else
 					{
@@ -814,7 +857,6 @@ public class GameManager : MonoBehaviour {
 				{
 					if (allHexagons[i , j-1].deleted&& allHexagons[i - 1, j ].deleted && allHexagons[i,j].deleted)
 					{
-						
 						
 					}
 					else
@@ -836,7 +878,6 @@ public class GameManager : MonoBehaviour {
 					if (allHexagons[i + 1, j].deleted&& allHexagons[i + 1, j + 1].deleted && allHexagons[i,j].deleted)
 					{
 						
-						
 					}
 					else
 					{
@@ -850,7 +891,6 @@ public class GameManager : MonoBehaviour {
 
 					if (allHexagons[i , j+1].deleted&& allHexagons[i + 1, j + 1].deleted && allHexagons[i,j].deleted)
 					{
-						
 						
 					}
 					else
@@ -868,7 +908,6 @@ public class GameManager : MonoBehaviour {
 						if (allHexagons[i , j-1].deleted&& allHexagons[i + 1, j ].deleted && allHexagons[i,j].deleted)
 						{
 						
-						
 						}
 						else
 						{
@@ -885,7 +924,6 @@ public class GameManager : MonoBehaviour {
 					{
 						if (allHexagons[i -1, j+1].deleted&& allHexagons[i , j + 1].deleted && allHexagons[i,j].deleted)
 						{
-						
 						
 						}
 						else
@@ -910,7 +948,6 @@ public class GameManager : MonoBehaviour {
 				if (allHexagons[i-1 , j-1].deleted&& allHexagons[i - 1, j ].deleted && allHexagons[i,j].deleted)
 				{
 						
-						
 				}
 				else
 				{
@@ -923,7 +960,6 @@ public class GameManager : MonoBehaviour {
 				}
 				if (allHexagons[i , j-1].deleted&& allHexagons[i - 1, j - 1].deleted && allHexagons[i,j].deleted)
 				{
-						
 						
 				}
 				else
@@ -945,7 +981,6 @@ public class GameManager : MonoBehaviour {
 					if (allHexagons[i +1, j-1].deleted&& allHexagons[i + 1, j].deleted && allHexagons[i,j].deleted)
 					{
 						
-						
 					}
 					else
 					{
@@ -958,7 +993,6 @@ public class GameManager : MonoBehaviour {
 					}
 					if (allHexagons[i +1, j-1].deleted&& allHexagons[i , j - 1].deleted && allHexagons[i,j].deleted)
 					{
-						
 						
 					}
 					else
@@ -980,7 +1014,6 @@ public class GameManager : MonoBehaviour {
 						if (allHexagons[i+1 , j].deleted&& allHexagons[i , j + 1].deleted && allHexagons[i,j].deleted)
 						{
 						
-						
 						}
 						else
 						{
@@ -998,7 +1031,6 @@ public class GameManager : MonoBehaviour {
 					if (allHexagons[i -1, j].deleted&& allHexagons[i , j + 1].deleted && allHexagons[i,j].deleted)
 					{
 						
-						
 					}
 					else
 					{
@@ -1015,8 +1047,23 @@ public class GameManager : MonoBehaviour {
 		    
 		   
 		}
-	    
 		return "NoSameColor";
+	}
+	public void popSameHexFromAllBoard()
+	{
+		new WaitForSeconds(1f);
+		Renderer rend;
+		
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < cols; j++)
+			{
+				rend = allHexagons[i, j].GetComponent<Renderer>();
+				popSameColor(rend, i, j);
+			}
+			
+		}
+		replaceAllHex();
 	}
 	
 }

@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5113018652214437163}
   - component: {fileID: 5113018652214437162}
   - component: {fileID: 5113018652214437165}
-  - component: {fileID: 6613618416177827703}
   m_Layer: 0
   m_Name: Dot
   m_TagString: Untagged
@@ -63,18 +62,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   index: 0
   swipeAngel: 0
---- !u!111 &6613618416177827703
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5113018652214437161}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 46d9b92f79b9bf14ba2729c1e17bf16d, type: 2}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 1

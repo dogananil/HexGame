@@ -31,6 +31,8 @@ public class DotTouch : MonoBehaviour
         touchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
        
         GameManager.instance.SelectHexagons(split,this.index);
+        
+        
     }
 
     private void OnMouseUp()
@@ -43,4 +45,6 @@ public class DotTouch : MonoBehaviour
     {
         swipeAngel = Mathf.Atan2(finalposition.y - touchPosition.y, finalposition.x - touchPosition.x)*180*Mathf.PI;
     }
+
+   
 }
