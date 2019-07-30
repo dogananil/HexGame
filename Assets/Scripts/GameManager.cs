@@ -269,7 +269,10 @@ public class GameManager : MonoBehaviour {
 				popOneMoveBefore = true;
 			}
 		}
-		
+		Text ScoreText;
+		score += deletedHex.Count*5;
+		ScoreText= ScoreTextObject.GetComponent<Text>();
+		ScoreText.text = "Score  = " + score;
 		if (popOneMoveBefore)
 		{
 			replaceAllHex();
@@ -656,6 +659,7 @@ public class GameManager : MonoBehaviour {
 					}
 				}
 			}
+			
 			refillAllBoard(i);
 		}
 		
@@ -714,10 +718,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 		indexDeleted = 0;
-		Text ScoreText;
-		score += deletedHex.Count*5;
-		ScoreText= ScoreTextObject.GetComponent<Text>();
-		ScoreText.text = "Score  = " + score;
+		
 		deletedHex.Clear();
 		deletedTile.Clear();
 		popSameHexFromAllBoard();
@@ -767,6 +768,7 @@ public class GameManager : MonoBehaviour {
 
 			
 		}
+		
 	}
 	
 	private IEnumerator WaitUntilPrevHexReset(bool right)
